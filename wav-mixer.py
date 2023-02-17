@@ -21,7 +21,7 @@ This is a really basic tool to mix multiple wav files
 """
 parser = argparse.ArgumentParser(description=DESC)
 parser.add_argument("files", nargs="+", help="input wav files (need at least 2)")
-parser.add_argument("-o", "--output", help = "write wav output to file")
+parser.add_argument("-o", "--output", required=True, help = "write wav output to file")
 args = parser.parse_args()
 
 output = args.output
