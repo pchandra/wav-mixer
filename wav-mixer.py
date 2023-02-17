@@ -1,5 +1,6 @@
 #!/usr/local/bin/python3.9
 
+import argparse
 import sys
 import time
 
@@ -13,16 +14,26 @@ def print_timer():
     print("[%05.2f][%05.2f]" % (now-time_start, now-time_last), end=" ")
     time_last = now
 
-print_timer()
-print("Starting wav_mixer...")
+# Parse the args
+DESC="""
+This is a really basic tool to mix multiple wav files
+(stereo, 16-bit, 44.1khz) into a single wav output
+"""
+parser = argparse.ArgumentParser(description=DESC)
+parser.add_argument("files", nargs="+", help="input wav files (need at least 2)")
+parser.add_argument("-o", "--output", help = "write wav output to file")
+args = parser.parse_args()
 
-output = "OUT-mixed.wav"
-files = sys.argv[1:]
+output = args.output
+files = args.files
 num = len(files)
 
 # Check we have at least 2 args, must be paths to WAV files
 if num < 2:
     sys.exit(" -- ERROR: Must have at least two filename arguments")
+
+print_timer()
+print("Starting wav_mixer...")
 
 # Load the libs that do the heavy lifting
 import soundfile
