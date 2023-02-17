@@ -72,7 +72,7 @@ print(" - Finished mixing...")
 # Convert to format that SoundFile can write
 left=y_out[0]
 right=y_out[1]
-stereo_out = [[l,r] for l,r in list(zip(left,right))]
+stereo_out = [[left[i],right[i]] for i in range(len(left))]
 print_timer()
 print(" - Finished formatting for output...")
 
