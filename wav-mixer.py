@@ -55,29 +55,21 @@ for file in files:
 
 print_timer()
 print(" - Mix audio tracks...")
-# Accumulate output in the first wav data
+# Accumulators for mixing, starting with first track
 y_out = data[0][0]
-sr_out= data[0][1]
+sr_out = data[0][1]
 
 for d in data[1:]:
     y_out = y_out + d[0]
     sr_out = sr_out + d[1]
 
 y_out = y_out/num
-sr_out = int(sr_out/num)
+sr_out = sr
 
 print_timer()
 print(" - Finished mixing...")
 
-# Convert to format that SoundFile can write
-left=y_out[0]
-right=y_out[1]
-stereo_out = [[left[i],right[i]] for i in range(len(left))]
-print_timer()
-print(" - Finished formatting for output...")
-
-soundfile.write(output, stereo_out, sr_out)
-#torchaudio.save(output, y_out[0], sr_out, encoding='PCM_S', bits_per_sample=16)
+soundfile.write(output, y_out.T, sr_out)
 print_timer()
 print(" - Finished writing output to \"" + output + "\"...")
 
