@@ -4,6 +4,8 @@ import argparse
 import sys
 import time
 
+SAMPLE_RATE=44100
+
 # Timer helper function
 time_start = time.perf_counter()
 time_last = 0
@@ -48,7 +50,7 @@ data = []
 for file in files:
     print_timer()
     print(" * Starting filename \"" + file + "\"...")
-    y, sr = librosa.load(file, sr=44100, mono=False)
+    y, sr = librosa.load(file, sr=SAMPLE_RATE, mono=False)
     data.append((y,sr))
     print_timer()
     print(" * Finished filename \"" + file + "\"...")
@@ -57,19 +59,14 @@ print_timer()
 print(" - Mix audio tracks...")
 # Accumulators for mixing, starting with first track
 y_out = data[0][0]
-sr_out = data[0][1]
 
 for d in data[1:]:
     y_out = y_out + d[0]
-    sr_out = sr_out + d[1]
-
-y_out = y_out/num
-sr_out = sr
 
 print_timer()
 print(" - Finished mixing...")
 
-soundfile.write(output, y_out.T, sr_out)
+soundfile.write(output, y_out.T, sr)
 print_timer()
 print(" - Finished writing output to \"" + output + "\"...")
 

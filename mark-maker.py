@@ -8,7 +8,7 @@ import librosa
 import numpy as np
 
 SAMPLE_RATE=44100
-MARK_STRENGTH = 1.5
+MARK_STRENGTH = 4
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -71,7 +71,7 @@ def main():
     print_timer()
     print(" - Mixing audio tracks...")
     # Mix the watermark into the wav
-    y_out = (y + (y_wtrm * MARK_STRENGTH)) / (1 + MARK_STRENGTH)
+    y_out = (y + (y_wtrm * MARK_STRENGTH))
     soundfile.write(outfile, y_out.T, sr)
     print_timer()
     print(" - Finished writing output to \"" + outfile + "\"...")
