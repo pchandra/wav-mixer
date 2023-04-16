@@ -55,12 +55,18 @@ def main():
     parser.add_argument("-i", "--input", required=True, help = "input wav file to watermark")
     parser.add_argument("-o", "--output", required=True, help = "write wav output to file")
     parser.add_argument("-s", "--stamp", required=True, help = "wav file to use for watermark stamp")
+    parser.add_argument("-m", "--mark", required=False, help = "set watermarking strength (default: 4)")
+    parser.add_argument("-r", "--rate", required=False, help = "resample all inputs to this rate (default: 44100)")
     args = parser.parse_args()
-    
+
     outfile = args.output
     file = args.input
     stamp = args.stamp
-        
+    if args.rate is not None:
+        SAMPLE_RATE = int(args.rate)
+    if args.mark is not None:
+        MARK_STRENGTH = int(args.mark)
+
     print_timer()
     print(" * Reading input filename \"" + file + "\"...")
     y, sr = librosa.load(file, sr=SAMPLE_RATE, mono=False)

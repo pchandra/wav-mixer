@@ -23,11 +23,15 @@ This is a really basic tool to mix multiple wav files
 """
 parser = argparse.ArgumentParser(description=DESC)
 parser.add_argument("files", nargs="+", help="input wav files (need at least 2)")
+parser.add_argument("-r", "--rate", required=False, help = "resample all inputs to this rate (default: 44100)")
 parser.add_argument("-o", "--output", required=True, help = "write wav output to file")
 args = parser.parse_args()
 
 output = args.output
 files = args.files
+if args.rate is not None:
+    SAMPLE_RATE = int(args.rate)
+
 num = len(files)
 
 # Check we have at least 2 args, must be paths to WAV files
