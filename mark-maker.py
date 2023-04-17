@@ -48,19 +48,23 @@ def _generate_stereo_watermark(target_shape, stamp):
     # Load the stamp as mono and build a silence track of the same length
     y_stamp, sr = librosa.load(stamp, sr=SAMPLE_RATE, mono=True)
     y_stamp_silent = np.zeros(y_stamp.shape)
-    left = np.array([y_stamp, y_stamp_silent], dtype=np.float32)
-    right = np.array([y_stamp_silent, y_stamp], dtype=np.float32)
-    center = np.array([y_stamp, y_stamp], dtype=np.float32)
+    # Make a number of versions with different stereo placement
+    versions = []
+    farleft = np.array([y_stamp, y_stamp_silent], dtype=np.float32)
+    midleft = np.array([y_stamp*0.8, y_stamp*0.2], dtype=np.float32)
+    nearleft = np.array([y_stamp*0.6, y_stamp*0.4], dtype=np.float32)
+    farright = np.array([y_stamp_silent, y_stamp], dtype=np.float32)
+    midright = np.array([y_stamp*0.2, y_stamp*0.8], dtype=np.float32)
+    nearright = np.array([y_stamp*0.4, y_stamp*0.6], dtype=np.float32)
+    center = np.array([y_stamp*0.5, y_stamp*0.5], dtype=np.float32)
+    versions = [ farleft, midleft, nearleft, center, nearright, midright, farright ]
     silence5s = np.zeros((2,sr*5), dtype=np.float32)
 
     # Start with 5 second of silence and then build
     watermark = np.zeros((2,sr*5), dtype=np.float32)
     while watermark.shape[1] < target_shape[1]:
-        watermark = np.concatenate((watermark.T, center.T)).T
-        watermark = np.concatenate((watermark.T, silence5s.T)).T
-        watermark = np.concatenate((watermark.T, left.T)).T
-        watermark = np.concatenate((watermark.T, silence5s.T)).T
-        watermark = np.concatenate((watermark.T, right.T)).T
+        this_stamp = versions[int(np.random.random() * len(versions))]
+        watermark = np.concatenate((watermark.T, this_stamp.T)).T
         watermark = np.concatenate((watermark.T, silence5s.T)).T
     # Trim the watermark to the same size as requested
     watermark = watermark.T[:target_shape[1]].T
