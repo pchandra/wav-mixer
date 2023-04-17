@@ -21,6 +21,31 @@ def print_timer():
 
 
 def generate_watermark(target_shape, stamp):
+    # Build either a stereo or a mono watermark track based on input type
+    if len(target_shape) == 2:
+        print_timer()
+        print(" - Generating STEREO watermark...")
+        return _generate_stereo_watermark(target_shape, stamp)
+    else:
+        print_timer()
+        print(" - Generating MONO watermark...")
+        return _generate_mono_watermark(target_shape, stamp)
+
+def _generate_mono_watermark(target_shape, stamp):
+    y_stamp, sr = librosa.load(stamp, sr=SAMPLE_RATE, mono=True)
+    silence5s = np.zeros(sr*5, dtype=np.float32)
+
+    # Start with 5 second of silence and then build
+    watermark = np.zeros(sr*5, dtype=np.float32)
+    while watermark.shape[0] < target_shape[0]:
+        watermark = np.concatenate((watermark, y_stamp))
+        watermark = np.concatenate((watermark, silence5s))
+    # Trim the watermark to the same size as requested
+    watermark = watermark[:target_shape[0]]
+    return watermark
+
+def _generate_stereo_watermark(target_shape, stamp):
+    # Load the stamp as mono and build a silence track of the same length
     y_stamp, sr = librosa.load(stamp, sr=SAMPLE_RATE, mono=True)
     y_stamp_silent = np.zeros(y_stamp.shape)
     left = np.array([y_stamp, y_stamp_silent], dtype=np.float32)
@@ -45,6 +70,7 @@ def generate_watermark(target_shape, stamp):
 def main():
     print_timer()
     print("Starting mark-maker...")
+    global SAMPLE_RATE
 
     # Parse the args
     DESC="""
