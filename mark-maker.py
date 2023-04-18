@@ -9,6 +9,8 @@ import numpy as np
 
 SAMPLE_RATE=44100
 MARK_STRENGTH = 4
+SILENCE_DELAY = 5
+SILENCE_GAP = 5
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -33,13 +35,13 @@ def generate_watermark(target_shape, stamp):
 
 def _generate_mono_watermark(target_shape, stamp):
     y_stamp, sr = librosa.load(stamp, sr=SAMPLE_RATE, mono=True)
-    silence5s = np.zeros(sr*5, dtype=np.float32)
+    silence_gap = np.zeros(sr*SILENCE_GAP, dtype=np.float32)
 
-    # Start with 5 second of silence and then build
-    watermark = np.zeros(sr*5, dtype=np.float32)
+    # Start with SILENCE_DELAY seconds of silence and then build
+    watermark = np.zeros(sr*SILENCE_DELAY, dtype=np.float32)
     while watermark.shape[0] < target_shape[0]:
         watermark = np.concatenate((watermark, y_stamp))
-        watermark = np.concatenate((watermark, silence5s))
+        watermark = np.concatenate((watermark, silence_gap))
     # Trim the watermark to the same size as requested
     watermark = watermark[:target_shape[0]]
     return watermark
@@ -58,14 +60,14 @@ def _generate_stereo_watermark(target_shape, stamp):
     nearright = np.array([y_stamp*0.4, y_stamp*0.6], dtype=np.float32)
     center = np.array([y_stamp*0.5, y_stamp*0.5], dtype=np.float32)
     versions = [ farleft, midleft, nearleft, center, nearright, midright, farright ]
-    silence5s = np.zeros((2,sr*5), dtype=np.float32)
+    silence_gap = np.zeros((2,sr*SILENCE_GAP), dtype=np.float32)
 
-    # Start with 5 second of silence and then build
-    watermark = np.zeros((2,sr*5), dtype=np.float32)
+    # Start with SILENCE_DELAY seconds of silence and then build
+    watermark = np.zeros((2,sr*SILENCE_DELAY), dtype=np.float32)
     while watermark.shape[1] < target_shape[1]:
         this_stamp = versions[int(np.random.random() * len(versions))]
         watermark = np.concatenate((watermark.T, this_stamp.T)).T
-        watermark = np.concatenate((watermark.T, silence5s.T)).T
+        watermark = np.concatenate((watermark.T, silence_gap.T)).T
     # Trim the watermark to the same size as requested
     watermark = watermark.T[:target_shape[1]].T
     return watermark
@@ -75,6 +77,9 @@ def main():
     print_timer()
     print("Starting mark-maker...")
     global SAMPLE_RATE
+    global MARK_STRENGTH
+    global SILENCE_DELAY
+    global SILENCE_GAP
 
     # Parse the args
     DESC="""
@@ -86,6 +91,8 @@ def main():
     parser.add_argument("-o", "--output", required=True, help = "write wav output to file")
     parser.add_argument("-s", "--stamp", required=True, help = "wav file to use for watermark stamp")
     parser.add_argument("-m", "--mark", required=False, help = "set watermarking strength (default: 4)")
+    parser.add_argument("-d", "--delay", required=False, help = "silence (in seconds) before first stamp (default: 5)")
+    parser.add_argument("-g", "--gap", required=False, help = "silence (in seconds) between subsequent stamps (default: 5)")
     parser.add_argument("-r", "--rate", required=False, help = "resample all inputs to this rate (default: 44100)")
     args = parser.parse_args()
 
@@ -96,6 +103,10 @@ def main():
         SAMPLE_RATE = int(args.rate)
     if args.mark is not None:
         MARK_STRENGTH = int(args.mark)
+    if args.delay is not None:
+        SILENCE_DELAY = int(args.delay)
+    if args.gap is not None:
+        SILENCE_GAP = int(args.gap)
 
     print_timer()
     print(" * Reading input filename \"" + file + "\"...")
