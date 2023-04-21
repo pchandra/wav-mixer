@@ -36,19 +36,23 @@ def main():
     parser = argparse.ArgumentParser(description=DESC)
     parser.add_argument("-i", "--input", required=True, help = "input wav file to use for waveform data")
     parser.add_argument("-o", "--output", required=True, help = "write SVG output to file")
+    parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
     parser.add_argument("-H", "--height", required=False, help = "height in pixels of the output (default: 100)")
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
     args = parser.parse_args()
 
-    outfile = args.output
     file = args.input
+    outfile = args.output
+    pngfile = None
     if args.bars is not None:
         BARS = int(args.bars)
     if args.height is not None:
         HEIGHT = int(args.height)
     if args.width is not None:
         WIDTH = int(args.width)
+    if args.pngout is not None:
+        pngfile = args.pngout
 
     # Open the audio file as mono to keep it simple
     y, sr = librosa.load(file, sr=None, mono=True)
@@ -78,6 +82,8 @@ def main():
             context.line_to(offset, 1-vals[count])
             context.stroke()
             count += 1
+        if pngfile is not None:
+            surface.write_to_png(pngfile)
 
 if __name__ == '__main__':
     main()
