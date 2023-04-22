@@ -60,7 +60,7 @@ def main():
     segments = np.array_split(y, BARS)
     vals = []
     for s in segments:
-        vals.append(np.median(np.absolute(s)))
+        vals.append(np.sqrt(np.mean(s**2)))
     # Normalize these values
     factor = max(vals)
     vals = [ (x / factor) * 0.9 for x in vals ]
