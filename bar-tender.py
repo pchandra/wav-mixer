@@ -54,8 +54,12 @@ def main():
     if args.pngout is not None:
         pngfile = args.pngout
 
+    print_timer()
+    print("Loading audio file...")
     # Open the audio file as mono to keep it simple
     y, sr = librosa.load(file, sr=None, mono=True)
+    print_timer()
+    print("Doing math...")
     # Split into chunks and compute a value for each segment
     segments = np.array_split(y, BARS)
     vals = []
@@ -70,6 +74,8 @@ def main():
     # The scaling factor on BARS controls the whitespace gaps
     line_width = 1 / (BARS * 1.25)
 
+    print_timer()
+    print("Drawing...")
     with cairo.SVGSurface(outfile, WIDTH, HEIGHT) as surface:
         context = cairo.Context(surface)
         context.scale(WIDTH, HEIGHT)
@@ -84,6 +90,8 @@ def main():
             count += 1
         if pngfile is not None:
             surface.write_to_png(pngfile)
+    print_timer()
+    print("Finished")
 
 if __name__ == '__main__':
     main()
