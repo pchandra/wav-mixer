@@ -10,6 +10,7 @@ import numpy as np
 BARS = 40
 HEIGHT = 100
 WIDTH = 500
+STEP = 1
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -27,6 +28,7 @@ def main():
     global BARS
     global HEIGHT
     global WIDTH
+    global STEP
 
     # Parse the args
     DESC="""
@@ -38,6 +40,7 @@ def main():
     parser.add_argument("-o", "--output", required=True, help = "write SVG output to file")
     parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
+    parser.add_argument("-s", "--step", required=False, help = "only print a bar for each step count of bars (default: 1)")
     parser.add_argument("-H", "--height", required=False, help = "height in pixels of the output (default: 100)")
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
     args = parser.parse_args()
@@ -47,6 +50,8 @@ def main():
     pngfile = None
     if args.bars is not None:
         BARS = int(args.bars)
+    if args.step is not None:
+        STEP = int(args.step)
     if args.height is not None:
         HEIGHT = int(args.height)
     if args.width is not None:
@@ -87,7 +92,7 @@ def main():
             context.move_to(offset, 1)
             context.line_to(offset, 1-vals[count])
             context.stroke()
-            count += 1
+            count += STEP
         if pngfile is not None:
             surface.write_to_png(pngfile)
     print_timer()
