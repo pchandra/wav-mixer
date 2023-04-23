@@ -75,15 +75,15 @@ def main():
     vals = [ (x / factor) * 0.9 for x in vals ]
 
     # Normalized step size per bar
-    step = 1 / BARS
+    step = (WIDTH/HEIGHT) / BARS
     # The scaling factor on BARS controls the whitespace gaps
-    line_width = 1 / (BARS * 1.25)
+    line_width = (WIDTH/HEIGHT) / (BARS * 1.25)
 
     print_timer()
     print("Drawing...")
     with cairo.SVGSurface(outfile, WIDTH, HEIGHT) as surface:
         context = cairo.Context(surface)
-        context.scale(WIDTH, HEIGHT)
+        context.scale(HEIGHT, HEIGHT)
         context.set_line_width(line_width)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         count = 0
