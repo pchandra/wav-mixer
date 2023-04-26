@@ -4,6 +4,7 @@ import argparse
 import sys
 import time
 import cairo
+from cairo import OPERATOR_CLEAR
 import librosa
 import numpy as np
 
@@ -41,13 +42,16 @@ def main():
     parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
     parser.add_argument("-s", "--step", required=False, help = "only print a bar for each step count of bars (default: 1)")
+    parser.add_argument("-f", "--factor", required=False, help = "the scaling factor (between 0-1) for bars (default: max of RMS)")
     parser.add_argument("-H", "--height", required=False, help = "height in pixels of the output (default: 100)")
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
+    parser.add_argument("-n", "--invert", default=False, action=argparse.BooleanOptionalAction, help = "invert black and transparent in output")
     args = parser.parse_args()
 
     file = args.input
     outfile = args.output
     pngfile = None
+    factor = 0
     if args.bars is not None:
         BARS = int(args.bars)
     if args.step is not None:
@@ -58,6 +62,8 @@ def main():
         WIDTH = int(args.width)
     if args.pngout is not None:
         pngfile = args.pngout
+    if args.factor is not None:
+        factor = float(args.factor)
 
     print_timer()
     print("Loading audio file...")
@@ -71,7 +77,7 @@ def main():
     for s in segments:
         vals.append(np.sqrt(np.mean(s**2)))
     # Normalize these values
-    factor = max(vals)
+    factor = max(vals) if factor == 0 else factor
     vals = [ (x / factor) * 0.9 for x in vals ]
 
     # Normalized step size per bar
@@ -84,6 +90,11 @@ def main():
     with cairo.SVGSurface(outfile, WIDTH, HEIGHT) as surface:
         context = cairo.Context(surface)
         context.scale(HEIGHT, HEIGHT)
+        if args.invert:
+            context.set_source_rgba(0, 0, 0, 1)
+            context.rectangle(0, 0, HEIGHT, WIDTH)
+            context.fill()
+            context.set_operator(OPERATOR_CLEAR)
         context.set_line_width(line_width)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
         count = 0
