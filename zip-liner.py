@@ -127,7 +127,7 @@ def main():
     inventory = {}
     inventory['summary'] = summary
     inventory['files'] = zipinfo
-    inventory['others'] = others
+    inventory['others'] = list(others.keys())
 
     print_timer()
     print("Writing output...")
