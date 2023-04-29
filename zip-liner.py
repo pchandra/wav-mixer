@@ -52,7 +52,7 @@ def _file_handler(filename):
         ret = _get_media_info(filename)
     return ret
 
-def _check_dir(subdir, base, info={}, other=[]):
+def _check_dir(subdir, base, info={}, other={}):
     print_timer()
     print(f"Descending into: {subdir}")
     dirpath = os.path.abspath(subdir)
@@ -61,12 +61,12 @@ def _check_dir(subdir, base, info={}, other=[]):
         if os.path.isdir(fullpath):
             dirinfo, dirother = _check_dir(fullpath, base)
             info.update(dirinfo)
-            other.extend(dirother)
+            other.update(dirother)
         else:
             result = _file_handler(fullpath)
             key = fullpath.replace(base + '/', '')
             if result == {}:
-                other.append(key)
+                other[key] = True
             elif result is not None:
                 info[key] = result
     return info, other
