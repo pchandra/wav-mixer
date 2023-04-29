@@ -11,13 +11,13 @@ import time
 
 TMPDIR = '/tmp'
 FFPROBE_BIN = '/usr/local/bin/ffprobe'
-FFPROBE_EXTS = [ ".wav",  ".WAV",
-                 ".aiff", ".AIFF",
-                 ".mp3",  ".MP3",
-                 ".jpg",  ".JPG",
-                 ".jpeg", ".JPEG",
-                 ".png",  ".PNG",
-                 ".gif",  ".GIF" ]
+FFPROBE_EXTS = [ ".wav",
+                 ".aiff",
+                 ".mp3",
+                 ".jpg",
+                 ".jpeg",
+                 ".png",
+                 ".gif", ]
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -54,7 +54,7 @@ def _file_handler(filename):
     if basename.startswith('.'):
         return
     ret = {}
-    ext = os.path.splitext(basename)[1]
+    ext = os.path.splitext(basename)[1].lower()
     if ext in FFPROBE_EXTS:
         ret = _get_media_info(filename)
     return ret
@@ -124,7 +124,7 @@ def main():
 
     for key in zipinfo.keys():
         basename = os.path.basename(key)
-        ext = os.path.splitext(basename)[1]
+        ext = os.path.splitext(basename)[1].lower()[1:]
         fmt = zipinfo[key].get('format')
         if fmt is not None:
             summary['size-uncompresssed'] += int(fmt.get('size', 0))
