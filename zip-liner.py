@@ -72,6 +72,7 @@ def _check_dir(subdir, base, info={}, other=[]):
     return info, other
 
 def main():
+    global FFPROBE_BIN
     print_timer()
     print("Starting zip-liner...")
 
