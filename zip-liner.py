@@ -83,11 +83,14 @@ def main():
     parser = argparse.ArgumentParser(description=DESC)
     parser.add_argument("-i", "--input", required=True, help = "input zip file to be inventoried")
     parser.add_argument("-o", "--output", required=True, help = "write JSON formatted output to file")
+    parser.add_argument("-f", "--ffprobe", required=False, help = "path to ffprobe binary to use")
     args = parser.parse_args()
 
     # Get the zip filename and a scratch directory
     file = args.input
     outfile = args.output
+    if args.ffprobe is not None:
+        FFPROBE_BIN = args.ffprobe
     scratch = TMPDIR + f'/{str(uuid.uuid4())}'
     os.makedirs(scratch)
 
