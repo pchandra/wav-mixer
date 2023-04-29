@@ -11,6 +11,13 @@ import time
 
 TMPDIR = '/tmp'
 FFPROBE_BIN = '/usr/local/bin/ffprobe'
+FFPROBE_EXTS = [ ".wav",  ".WAV",
+                 ".aiff", ".AIFF",
+                 ".mp3",  ".MP3",
+                 ".jpg",  ".JPG",
+                 ".jpeg", ".JPEG",
+                 ".png",  ".PNG",
+                 ".gif",  ".GIF" ]
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -48,7 +55,7 @@ def _file_handler(filename):
         return
     ret = {}
     ext = os.path.splitext(basename)[1]
-    if ext in [ ".wav", ".aiff", ".mp3", ".jpg", ".jpeg", ".png", ".gif"]:
+    if ext in FFPROBE_EXTS:
         ret = _get_media_info(filename)
     return ret
 
