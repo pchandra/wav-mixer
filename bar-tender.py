@@ -46,6 +46,7 @@ def main():
     parser.add_argument("-H", "--height", required=False, help = "height in pixels of the output (default: 100)")
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
     parser.add_argument("-n", "--invert", default=False, action=argparse.BooleanOptionalAction, help = "invert black and transparent in output")
+    parser.add_argument("-m", "--mirror", default=False, action=argparse.BooleanOptionalAction, help = "mirror bars vertically from the center")
     args = parser.parse_args()
 
     file = args.input
@@ -100,8 +101,14 @@ def main():
         count = 0
         while count < BARS:
             offset = (step / 2) + (count * step)
-            context.move_to(offset, 1)
-            context.line_to(offset, 1-vals[count])
+            if args.mirror:
+                bottom = 1-(1-vals[count])/2
+                top = (1-vals[count])/2
+            else:
+                bottom = 1
+                top = 1-vals[count]
+            context.move_to(offset, bottom)
+            context.line_to(offset, top)
             context.stroke()
             count += STEP
         if pngfile is not None:
