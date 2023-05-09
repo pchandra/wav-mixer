@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+import json
 import time
 import cairo
 from cairo import OPERATOR_CLEAR
@@ -43,6 +44,7 @@ def main():
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
     parser.add_argument("-s", "--step", required=False, help = "only print a bar for each step count of bars (default: 1)")
     parser.add_argument("-f", "--factor", required=False, help = "the scaling factor (between 0-1) for bars (default: max of RMS)")
+    parser.add_argument("-F", "--ffile", required=False, help = "filename to write the scaling factor in JSON")
     parser.add_argument("-H", "--height", required=False, help = "height in pixels of the output (default: 100)")
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
     parser.add_argument("-n", "--invert", default=False, action=argparse.BooleanOptionalAction, help = "invert black and transparent in output")
@@ -80,6 +82,10 @@ def main():
     # Normalize these values
     factor = max(vals) if factor == 0 else factor
     vals = [ (x / factor) * 0.9 for x in vals ]
+
+    if args.ffile is not None:
+        with open(args.ffile, 'w') as f:
+            json.dump({'factor': float(factor)}, f)
 
     # Normalized step size per bar
     step = (WIDTH/HEIGHT) / BARS
