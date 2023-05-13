@@ -13,6 +13,7 @@ BARS = 40
 HEIGHT = 100
 WIDTH = 500
 STEP = 1
+MAX = 0.9
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -31,6 +32,7 @@ def main():
     global HEIGHT
     global WIDTH
     global STEP
+    global MAX
 
     # Parse the args
     DESC="""
@@ -49,6 +51,7 @@ def main():
     parser.add_argument("-W", "--width", required=False, help = "width in pixels of the output (default: 500)")
     parser.add_argument("-n", "--invert", default=False, action=argparse.BooleanOptionalAction, help = "invert black and transparent in output")
     parser.add_argument("-m", "--mirror", default=False, action=argparse.BooleanOptionalAction, help = "mirror bars vertically from the center")
+    parser.add_argument("-M", "--max", required=False, help = "max percent of height vs total image height (default: 0.9)")
     args = parser.parse_args()
 
     file = args.input
@@ -67,6 +70,8 @@ def main():
         pngfile = args.pngout
     if args.factor is not None:
         factor = float(args.factor)
+    if args.max is not None:
+        MAX = float(args.max)
 
     print_timer()
     print("Loading audio file...")
@@ -81,7 +86,7 @@ def main():
         vals.append(np.sqrt(np.mean(s**2)))
     # Normalize these values
     factor = max(vals) if factor == 0 else factor
-    vals = [ (x / factor) * 0.9 for x in vals ]
+    vals = [ (x / factor) * MAX for x in vals ]
 
     if args.ffile is not None:
         with open(args.ffile, 'w') as f:
