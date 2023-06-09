@@ -50,7 +50,7 @@ print(" - Loading numpy...")
 import numpy as np
 print_timer()
 print(" * Loading filename \"" + file + "\"...")
-y, sr = librosa.load(file, sr=None, mono=False)
+y, sr = librosa.load(file, sr=22050, mono=True)
 print_timer()
 print(" * Doing math...")
 trimmed = y.T[int(TRIM*sr):-1*int(TRIM*sr)]
@@ -69,7 +69,7 @@ filebase = f"{output}/{str(uuid.uuid4())}"
 for x, s in enumerate(segments):
     print_timer()
     print(f" - Writing segment {x:02} to file...")
-    sf.write(filebase + f"-{x:02}.wav", s, sr)
+    sf.write(filebase + f"-{x:02}.mp3", s, sr)
 
 print_timer()
 print("Done")
