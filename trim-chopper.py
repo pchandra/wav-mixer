@@ -50,7 +50,7 @@ print(" - Loading numpy...")
 import numpy as np
 print_timer()
 print(" * Loading filename \"" + file + "\"...")
-y, sr = librosa.load(file, sr=22050, mono=True)
+y, sr = librosa.load(file, sr=None, mono=False)
 print_timer()
 print(" * Doing math...")
 trimmed = y.T[int(TRIM*sr):-1*int(TRIM*sr)]
