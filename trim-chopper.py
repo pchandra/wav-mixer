@@ -7,6 +7,7 @@ import uuid
 
 TRIM = 5
 SIZE = 30
+MAX = 0
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -28,6 +29,7 @@ parser.add_argument("file", help="input wav file to chop")
 parser.add_argument("-o", "--output", required=True, help = "write segments to output directory")
 parser.add_argument("-t", "--trim", required=False, help = "seconds to from start and end of input (default: 5)")
 parser.add_argument("-s", "--size", required=False, help = "length (in seconds) of each segment (default: 30)")
+parser.add_argument("-m", "--max", required=False, help = "max number of segments to output (default: all)")
 args = parser.parse_args()
 
 output = args.output
@@ -36,6 +38,8 @@ if args.trim is not None:
     TRIM = float(args.trim)
 if args.size is not None:
     SIZE = float(args.size)
+if args.max is not None:
+    MAX = float(args.max)
 
 print_timer()
 print("Starting trim-chopper...")
@@ -55,6 +59,7 @@ print_timer()
 print(" * Doing math...")
 trimmed = y.T[int(TRIM*sr):-1*int(TRIM*sr)]
 s_count = int(len(trimmed) / (SIZE*sr))
+s_count = MAX if MAX > 0 and s_count > MAX else s_count
 
 counter = 0
 segments = []
