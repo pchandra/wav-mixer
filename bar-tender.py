@@ -14,6 +14,7 @@ HEIGHT = 100
 WIDTH = 500
 STEP = 1
 MAX = 0.9
+COLOR = (0,0,0)
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -33,6 +34,7 @@ def main():
     global WIDTH
     global STEP
     global MAX
+    global COLOR
 
     # Parse the args
     DESC="""
@@ -43,6 +45,7 @@ def main():
     parser.add_argument("-i", "--input", required=True, help = "input wav file to use for waveform data")
     parser.add_argument("-o", "--output", required=True, help = "write SVG output to file")
     parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
+    parser.add_argument("-c", "--color", required=False, help = "hex string of the color to use in output (default: 000000)")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
     parser.add_argument("-s", "--step", required=False, help = "only print a bar for each step count of bars (default: 1)")
     parser.add_argument("-f", "--factor", required=False, help = "the scaling factor (between 0-1) for bars (default: max of RMS)")
@@ -58,6 +61,11 @@ def main():
     outfile = args.output
     pngfile = None
     factor = 0
+    if args.color is not None:
+        r = int(args.color[0:2], 16) / 255
+        g = int(args.color[2:4], 16) / 255
+        b = int(args.color[4:6], 16) / 255
+        COLOR = (r, g, b)
     if args.bars is not None:
         BARS = int(args.bars)
     if args.step is not None:
@@ -102,8 +110,9 @@ def main():
     with cairo.SVGSurface(outfile, WIDTH, HEIGHT) as surface:
         context = cairo.Context(surface)
         context.scale(HEIGHT, HEIGHT)
+        context.set_source_rgb(COLOR[0], COLOR[1], COLOR[2])
         if args.invert:
-            context.set_source_rgba(0, 0, 0, 1)
+            context.set_source_rgba(COLOR[0], COLOR[1], COLOR[2], 1)
             context.rectangle(0, 0, HEIGHT, WIDTH)
             context.fill()
             context.set_operator(OPERATOR_CLEAR)
