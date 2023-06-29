@@ -58,6 +58,7 @@ y, sr = librosa.load(file, sr=None, mono=False)
 print_timer()
 print(" * Doing math...")
 trimmed = y.T[int(TRIM*sr):-1*int(TRIM*sr)] if TRIM != 0 else y.T
+SIZE = len(trimmed) / sr if SIZE == 0 else SIZE
 s_count = int(len(trimmed) / (SIZE*sr))
 s_count = MAX if MAX > 0 and s_count > MAX else s_count
 
