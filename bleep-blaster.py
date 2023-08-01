@@ -18,7 +18,7 @@ def get_beep_filler(length, data):
     return np.random.rand(length ,2)
 
 def get_reverse_filler(length, data):
-    return np.flip(data)
+    return np.flip(data, axis=0)
 
 # Timer helper function
 time_start = time.perf_counter()
