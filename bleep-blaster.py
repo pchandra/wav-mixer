@@ -5,7 +5,7 @@ import sys
 import time
 import json
 
-BLEEP_TYPES = [ 'fuzz', 'scratch', 'beep', 'silence' ]
+BLEEP_TYPES = [ 'fuzz', 'reverse', 'beep', 'silence' ]
 BLEEP = BLEEP_TYPES[0]
 
 def get_fuzz_filler(length):
@@ -17,8 +17,8 @@ def get_silence_filler(length):
 def get_beep_filler(length):
     return np.random.rand(length ,2)
 
-def get_scratch_filler(length):
-    return np.random.rand(length ,2)
+def get_reverse_filler(length):
+    return np.flip(length)
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -50,10 +50,10 @@ file = args.file
 if args.bleep is not None and args.bleep in BLEEP_TYPES:
     BLEEP = args.bleep
 
-if BLEEP == "scratch":
-    get_filler = get_scratch_filler
-elif BLEEP == "beep":
+if BLEEP == "beep":
     get_filler = get_beep_filler
+elif BLEEP == "reverse":
+    get_filler = get_reverse_filler
 elif BLEEP == "silence":
     get_filler = get_silence_filler
 else:
