@@ -8,17 +8,17 @@ import json
 BLEEP_TYPES = [ 'fuzz', 'reverse', 'beep', 'silence' ]
 BLEEP = BLEEP_TYPES[0]
 
-def get_fuzz_filler(length):
+def get_fuzz_filler(length, data):
     return np.random.rand(length ,2)
 
-def get_silence_filler(length):
+def get_silence_filler(length, data):
     return np.zeros((length ,2))
 
-def get_beep_filler(length):
+def get_beep_filler(length, data):
     return np.random.rand(length ,2)
 
-def get_reverse_filler(length):
-    return np.flip(length)
+def get_reverse_filler(length, data):
+    return np.flip(data)
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -91,7 +91,7 @@ data = y.T
 for word, c1, c2 in cutlist:
     cut1 = int(c1 * sr)
     cut2 = int(c2 * sr)
-    fill = get_filler(cut2-cut1)
+    fill = get_filler(cut2-cut1, data[cut1:cut2])
     scale = np.sqrt(np.mean(data[cut1:cut2]**2))
     fill = fill * scale
     data = np.concatenate((data[:cut1], fill, data[cut2:]))
