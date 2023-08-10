@@ -86,9 +86,13 @@ with open(wordlist, 'r') as f:
     wordlist = json.load(f)
 for seg in lyrics['segments']:
     for word in seg['words']:
-        if word['text'].strip().lower() in wordlist:
-            if word['start'] != word['end']:
-                cutlist.append((word['text'].strip().lower(), word['start'], word['end']))
+        for version in [ 'text', 'word' ]:
+            try:
+                if word[version].strip().lower() in wordlist:
+                    if word['start'] != word['end']:
+                        cutlist.append((word[version].strip().lower(), word['start'], word['end']))
+            except:
+                pass
 print_timer()
 print(f" * Doing math for cutlist ({len(cutlist)})...")
 data = y.T
