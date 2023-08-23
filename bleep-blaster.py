@@ -90,7 +90,7 @@ for seg in lyrics['segments']:
             try:
                 if word[version].strip().lower() in wordlist:
                     if word['start'] != word['end']:
-                        cutlist.append((word[version].strip().lower(), word['start'], word['end']))
+                        cutlist.append((word[version].strip().lower().strip('🎵'), word['start'], word['end']))
             except:
                 pass
 print_timer()
