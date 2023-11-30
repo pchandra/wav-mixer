@@ -7,7 +7,9 @@ import json
 
 BLEEP_TYPES = [ 'reverse', 'beep', 'silence', 'fuzz' ]
 BLEEP = BLEEP_TYPES[0]
+BLEEP_BUFFER = 5
 MARK_STRENGTH = 4
+
 
 def get_fuzz_filler(length, data):
     return np.random.rand(length ,2)
@@ -43,6 +45,7 @@ parser.add_argument("-w", "--wordlist", required=True, help = "list of words (in
 parser.add_argument("-o", "--output", required=True, help = "write to output file")
 parser.add_argument("-b", "--bleep", required=False, help = "type of bleep to use (default: fuzz)")
 parser.add_argument("-m", "--mark", required=False, help = "strength of the multiplier for the bleep (default: 4)")
+parser.add_argument("-B", "--buffer", required=False, help = "percent buffer each side of bleeped word (default: 5)")
 args = parser.parse_args()
 
 lyrics = args.lyrics
@@ -53,6 +56,8 @@ if args.bleep is not None and args.bleep in BLEEP_TYPES:
     BLEEP = args.bleep
 if args.mark is not None:
     MARK_STRENGTH = int(args.mark)
+if args.buffer is not None:
+    BLEEP_BUFFER = int(args.buffer)
 
 if BLEEP == "beep":
     get_filler = get_beep_filler
@@ -97,8 +102,10 @@ print_timer()
 print(f" * Doing math for cutlist ({len(cutlist)})...")
 data = y.T
 for word, c1, c2 in cutlist:
-    cut1 = int(c1 * sr)
-    cut2 = int(c2 * sr)
+    gap = c2-c1
+    buffer = gap * BLEEP_BUFFER / 100
+    cut1 = int((c1-buffer) * sr)
+    cut2 = int((c2+buffer) * sr)
     fill = get_filler(cut2-cut1, data[cut1:cut2])
     scale = np.sqrt(np.mean(data[cut1:cut2]**2))
     fill = fill * scale * MARK_STRENGTH
