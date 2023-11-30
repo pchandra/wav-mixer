@@ -73,6 +73,8 @@ print("Starting bleep-blaster...")
 print_timer()
 print(f" - Using bleep type of {BLEEP}")
 print_timer()
+print(f" - Using bleep buffer of {BLEEP_BUFFER}%")
+print_timer()
 print(" - Loading librosa...")
 import librosa
 import soundfile as sf
@@ -103,9 +105,11 @@ print(f" * Doing math for cutlist ({len(cutlist)})...")
 data = y.T
 for word, c1, c2 in cutlist:
     gap = c2-c1
-    buffer = gap * BLEEP_BUFFER / 100
+    buffer = gap * (BLEEP_BUFFER / 100)
     cut1 = int((c1-buffer) * sr)
     cut2 = int((c2+buffer) * sr)
+    cut1 = cut1 if cut1 > 0 else 0
+    cut2 = cut2 if cut2 < len(data) else len(data)
     fill = get_filler(cut2-cut1, data[cut1:cut2])
     scale = np.sqrt(np.mean(data[cut1:cut2]**2))
     fill = fill * scale * MARK_STRENGTH
