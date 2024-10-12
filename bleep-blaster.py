@@ -40,8 +40,8 @@ based on a word list and lyrics JSON cutlist
 """
 parser = argparse.ArgumentParser(description=DESC)
 parser.add_argument("file", help="input wav file to bleep")
-parser.add_argument("-l", "--lyrics", required=True, help = "lyrics JSON file for the input track")
-parser.add_argument("-w", "--wordlist", required=True, help = "list of words (in JSON file) to bleep")
+parser.add_argument("-l", "--lyrics", required=False, help = "lyrics JSON file for the input track")
+parser.add_argument("-w", "--wordlist", required=False, help = "list of words (in JSON file) to bleep")
 parser.add_argument("-o", "--output", required=True, help = "write WAV audio to output file")
 parser.add_argument("-c", "--cutout", required=False, help = "write JSON cutlist to output file")
 parser.add_argument("-u", "--user", required=False, help = "use manual cutlist to create output")
@@ -55,7 +55,13 @@ wordlist = args.wordlist
 output = args.output
 file = args.file
 cutout = args.cutout
-userlist = args.user
+user = args.user
+
+# Sanity check the optional args
+if not (wordlist and lyrics) or user:
+    print("Either wordlist and lyrics, or a user arg is required, exiting")
+    sys.exit(-1)
+
 if args.bleep is not None and args.bleep in BLEEP_TYPES:
     BLEEP = args.bleep
 if args.mark is not None:
