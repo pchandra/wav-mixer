@@ -43,7 +43,7 @@ parser.add_argument("file", help="input wav file to bleep")
 parser.add_argument("-l", "--lyrics", required=True, help = "lyrics JSON file for the input track")
 parser.add_argument("-w", "--wordlist", required=True, help = "list of words (in JSON file) to bleep")
 parser.add_argument("-o", "--output", required=True, help = "write WAV audio to output file")
-parser.add_argument("-c", "--cutlist", required=False, help = "write JSON cutlist to output file")
+parser.add_argument("-c", "--cutout", required=False, help = "write JSON cutlist to output file")
 parser.add_argument("-u", "--user", required=False, help = "use manual cutlist to create output")
 parser.add_argument("-b", "--bleep", required=False, help = "type of bleep to use (default: fuzz)")
 parser.add_argument("-m", "--mark", required=False, help = "strength of the multiplier for the bleep (default: 4)")
@@ -54,7 +54,7 @@ lyrics = args.lyrics
 wordlist = args.wordlist
 output = args.output
 file = args.file
-cutoutput = args.cutlist
+cutout = args.cutout
 userlist = args.user
 if args.bleep is not None and args.bleep in BLEEP_TYPES:
     BLEEP = args.bleep
@@ -123,9 +123,9 @@ for word, c1, c2 in cutlist:
 print_timer()
 print(f" * Writing output file ...")
 sf.write(output, data, sr)
-if cutoutput:
+if cutout:
     content = json.dumps(cutlist)
-    with open(cutoutput, 'w') as f:
+    with open(cutout, 'w') as f:
         f.write(content)
 
 print_timer()
