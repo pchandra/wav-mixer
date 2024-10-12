@@ -58,7 +58,7 @@ cutout = args.cutout
 user = args.user
 
 # Sanity check the optional args
-if not (wordlist and lyrics) or user:
+if not (wordlist and lyrics) and not user:
     print("Either wordlist and lyrics, or a user arg is required, exiting")
     sys.exit(-1)
 
