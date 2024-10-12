@@ -95,21 +95,27 @@ print_timer()
 print(" * Loading filename \"" + file + "\"...")
 y, sr = librosa.load(file, sr=None, mono=False)
 print_timer()
-print(" * Loading lyrics cutlist and wordlist...")
 cutlist = []
-with open(lyrics, 'r') as f:
-    lyrics = json.load(f)
-with open(wordlist, 'r') as f:
-    wordlist = json.load(f)
-for seg in lyrics['segments']:
-    for word in seg['words']:
-        for version in [ 'text', 'word' ]:
-            try:
-                if word[version].strip().lower() in wordlist or (word[version] != '[*]' and '*' in word[version]):
-                    if word['start'] != word['end']:
-                        cutlist.append((word[version].strip().lower(), word['start'], word['end']))
-            except:
-                pass
+if user:
+    print(" * Loading user cutlist...")
+    with open(user, 'r') as f:
+        cutdata = json.load(f)
+    cutlist = [tuple(x) for x in cutdata]
+else:
+    print(" * Loading lyrics cutlist and wordlist...")
+    with open(lyrics, 'r') as f:
+        lyrics = json.load(f)
+    with open(wordlist, 'r') as f:
+        wordlist = json.load(f)
+    for seg in lyrics['segments']:
+        for word in seg['words']:
+            for version in [ 'text', 'word' ]:
+                try:
+                    if word[version].strip().lower() in wordlist or (word[version] != '[*]' and '*' in word[version]):
+                        if word['start'] != word['end']:
+                            cutlist.append((word[version].strip().lower(), word['start'], word['end']))
+                except:
+                    pass
 print_timer()
 print(f" * Doing math for cutlist ({len(cutlist)})...")
 data = y.T
