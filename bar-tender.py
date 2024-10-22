@@ -36,6 +36,7 @@ def main():
     global STEP
     global MAX
     global COLOR
+    global JSONINTERVAL
 
     # Parse the args
     DESC="""
@@ -95,9 +96,14 @@ def main():
     y, sr = librosa.load(file, sr=None, mono=True)
     print_timer()
     if jsonout:
+        jsondata = {}
+        jsondata['interval'] = JSONINTERVAL
+        jsondata['data'] = []
         print("Doing math for JSON waveform...")
         samples = np.array_split(y, len(y)/sr*1000/JSONINTERVAL)
-        print(samples)
+        for sample in samples:
+            jsondata['data'].append(np.sqrt(np.mean(sample**2)))
+        print(jsondata)
     print("Doing math...")
     # Split into chunks and compute a value for each segment
     segments = np.array_split(y, BARS)
