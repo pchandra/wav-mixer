@@ -103,6 +103,9 @@ def main():
         samples = np.array_split(y, len(y)/sr*1000/JSONINTERVAL)
         for sample in samples:
             jsondata['data'].append(np.sqrt(np.mean(sample**2)))
+        # Normalize these values
+        scale = max(jsondata['data'])
+        jsondata['data'] = [ (int(x / scale * 255)) for x in jsondata['data'] ]
         print(jsondata)
     print("Doing math...")
     # Split into chunks and compute a value for each segment
