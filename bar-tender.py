@@ -16,6 +16,7 @@ STEP = 1
 MAX = 0.9
 COLOR = (0,0,0)
 JSONINTERVAL = 10
+JSONMAX = 255
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -37,6 +38,7 @@ def main():
     global MAX
     global COLOR
     global JSONINTERVAL
+    global JSONMAX
 
     # Parse the args
     DESC="""
@@ -48,6 +50,7 @@ def main():
     parser.add_argument("-o", "--output", required=True, help = "write SVG output to file")
     parser.add_argument("-j", "--jsonout", required=False, help = "write JSON output to file based on interval")
     parser.add_argument("-V", "--jsoninterval", required=False, help = "interval in ms for JSON samples")
+    parser.add_argument("-Y", "--jsonmax", required=False, help = "maximum value for an integer in JSON")
     parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
     parser.add_argument("-c", "--color", required=False, help = "hex string of the color to use in output (default: 000000)")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
@@ -89,6 +92,8 @@ def main():
         jsonout = args.jsonout
     if args.jsoninterval is not None:
         JSONINTERVAL = int(args.jsoninterval)
+    if args.jsonmax is not None:
+        JSONMAX = int(args.jsonmax)
 
     print_timer()
     print("Loading audio file...")
@@ -105,7 +110,7 @@ def main():
             jsondata['data'].append(np.sqrt(np.mean(sample**2)))
         # Normalize these values
         scale = max(jsondata['data'])
-        jsondata['data'] = [ (int(x / scale * 255)) for x in jsondata['data'] ]
+        jsondata['data'] = [ (int(x / scale * JSONMAX)) for x in jsondata['data'] ]
         print(jsondata)
     print("Doing math...")
     # Split into chunks and compute a value for each segment
