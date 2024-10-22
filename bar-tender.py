@@ -111,7 +111,9 @@ def main():
         # Normalize these values
         scale = max(jsondata['data'])
         jsondata['data'] = [ (int(x / scale * JSONMAX)) for x in jsondata['data'] ]
-        print(jsondata)
+        print("Writing JSON waveform output...")
+        with open(jsonout, 'w') as f:
+            json.dump(jsondata, f)
     print("Doing math...")
     # Split into chunks and compute a value for each segment
     segments = np.array_split(y, BARS)
