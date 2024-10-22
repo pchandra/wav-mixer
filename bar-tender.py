@@ -15,6 +15,7 @@ WIDTH = 500
 STEP = 1
 MAX = 0.9
 COLOR = (0,0,0)
+JSONINTERVAL = 10
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -44,6 +45,8 @@ def main():
     parser = argparse.ArgumentParser(description=DESC)
     parser.add_argument("-i", "--input", required=True, help = "input wav file to use for waveform data")
     parser.add_argument("-o", "--output", required=True, help = "write SVG output to file")
+    parser.add_argument("-j", "--jsonout", required=False, help = "write JSON output to file based on interval")
+    parser.add_argument("-V", "--jsoninterval", required=False, help = "interval in ms for JSON samples")
     parser.add_argument("-p", "--pngout", required=False, help = "write a PNG version of output to file")
     parser.add_argument("-c", "--color", required=False, help = "hex string of the color to use in output (default: 000000)")
     parser.add_argument("-b", "--bars", required=False, help = "number of bars to produce in the SVG (default: 40)")
@@ -60,6 +63,7 @@ def main():
     file = args.input
     outfile = args.output
     pngfile = None
+    jsonout = None
     factor = 0
     if args.color is not None:
         r = int(args.color[0:2], 16) / 255
@@ -80,12 +84,20 @@ def main():
         factor = float(args.factor)
     if args.max is not None:
         MAX = float(args.max)
+    if args.jsonout is not None:
+        jsonout = args.jsonout
+    if args.jsoninterval is not None:
+        JSONINTERVAL = int(args.jsoninterval)
 
     print_timer()
     print("Loading audio file...")
     # Open the audio file as mono to keep it simple
     y, sr = librosa.load(file, sr=None, mono=True)
     print_timer()
+    if jsonout:
+        print("Doing math for JSON waveform...")
+        samples = np.array_split(y, len(y)/sr*1000/JSONINTERVAL)
+        print(samples)
     print("Doing math...")
     # Split into chunks and compute a value for each segment
     segments = np.array_split(y, BARS)
