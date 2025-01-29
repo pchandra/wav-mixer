@@ -5,7 +5,7 @@ import sys
 import time
 import json
 
-BLEEP_TYPES = [ 'reverse', 'beep', 'silence', 'fuzz' ]
+BLEEP_TYPES = [ 'fuzz', 'beep', 'silence', 'reverse' ]
 BLEEP = BLEEP_TYPES[0]
 BLEEP_BUFFER = 5
 MARK_STRENGTH = 4
@@ -22,6 +22,16 @@ def get_beep_filler(length, data):
 
 def get_reverse_filler(length, data):
     return np.flip(data, axis=0)
+
+def get_filler_for_bleep(bleep):
+    if bleep == "beep":
+        return get_beep_filler
+    elif bleep == "reverse":
+        return get_reverse_filler
+    elif bleep == "silence":
+        return get_silence_filler
+    else:
+        return get_fuzz_filler
 
 # Timer helper function
 time_start = time.perf_counter()
@@ -69,15 +79,6 @@ if args.mark is not None:
 if args.buffer is not None:
     BLEEP_BUFFER = int(args.buffer)
 
-if BLEEP == "beep":
-    get_filler = get_beep_filler
-elif BLEEP == "reverse":
-    get_filler = get_reverse_filler
-elif BLEEP == "silence":
-    get_filler = get_silence_filler
-else:
-    get_filler = get_fuzz_filler
-
 print_timer()
 print("Starting bleep-blaster...")
 print_timer()
@@ -100,7 +101,8 @@ if user:
     print(" * Loading user cutlist...")
     with open(user, 'r') as f:
         cutdata = json.load(f)
-    cutlist = [tuple(x) for x in cutdata]
+    BLEEP = cutdata.get('bleep', BLEEP)
+    cutlist = [tuple(x) for x in cutdata['radioCutlist']]
 else:
     print(" * Loading lyrics cutlist and wordlist...")
     with open(lyrics, 'r') as f:
@@ -118,6 +120,7 @@ else:
                     pass
 print_timer()
 print(f" * Doing math for cutlist ({len(cutlist)})...")
+get_filler = get_filler_for_bleep(BLEEP)
 data = y.T
 for word, c1, c2 in cutlist:
     gap = c2-c1
