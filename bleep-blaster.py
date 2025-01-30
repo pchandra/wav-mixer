@@ -9,7 +9,7 @@ BLEEP_TYPES = [ 'fuzz', 'beep', 'silence', 'reverse' ]
 BLEEP = BLEEP_TYPES[0]
 BLEEP_BUFFER = 5
 MARK_STRENGTH = 4
-
+FREQUENCY = 12000
 
 def get_fuzz_filler(length, data):
     return np.random.rand(length ,2)
@@ -18,7 +18,9 @@ def get_silence_filler(length, data):
     return np.zeros((length ,2))
 
 def get_beep_filler(length, data):
-    return np.random.rand(length ,2)
+    base = np.linspace(0, 1, length, endpoint=False)
+    beep_data = np.sin(2 * np.pi * FREQUENCY * base)
+    return np.array([beep_data, beep_data]).T
 
 def get_reverse_filler(length, data):
     return np.flip(data, axis=0)
